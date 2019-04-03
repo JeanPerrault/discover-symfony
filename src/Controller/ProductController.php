@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {
-    function __construct()
+    public function __construct()
     {
             $table=[
                 ["name"=>"iPhone X", "slug"=>"iphone-x","description"=>"un iPhone de 2017"],
@@ -34,7 +34,6 @@ class ProductController extends AbstractController
     public function list()
     {
         return $this-> render('Product/list.html.twig');
-
     }
 
     /**
