@@ -22,9 +22,9 @@ class ProductController extends AbstractController
     public function __construct()
     {
         $this->products = [
-            ['name' => 'iPhone X', 'slug' => 'iphone-x', 'description' => 'Un iPhone de 2017'],
-            ['name' => 'iPhone XR', 'slug' => 'iphone-xr', 'description' => 'Un iPhone de 2018'],
-            ['name' => 'iPhone XS', 'slug' => 'iphone-xs', 'description' => 'Un iPhone de 2018']
+            ['name' => 'iPhone X', 'slug' => 'iphone-x', 'description' => 'Un iPhone de 2017', 'price' => 999],
+            ['name' => 'iPhone XR', 'slug' => 'iphone-xr', 'description' => 'Un iPhone de 2018', 'price' => 1099],
+            ['name' => 'iPhone XS', 'slug' => 'iphone-xs', 'description' => 'Un iPhone de 2018', 'price' => 1199]
         ];
     }
 
@@ -42,12 +42,13 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Route("/product/{page}")
+     * @Route("/product/{page}", requirements={"page":"\d+"})
      */
     public function list($page = 1)
     {
         $begin = $page > 1 ? ($page - 1) * 2 : 0;
         $products = array_slice($this->products, $begin, 2);
+        $maxPages = ceil(count($this->products) / 2);
 
         // $products = array_slice($this->products, ($page - 1) * 2, 2);
 
@@ -56,7 +57,9 @@ class ProductController extends AbstractController
         }
 
         return $this->render('product/list.html.twig', [
-            'products' => $products
+            'products' => $products,
+            'maxPages' => $maxPages,
+            'currentPage' => $page
         ]);
     }
 
@@ -66,6 +69,23 @@ class ProductController extends AbstractController
     public function create()
     {
         return $this->render('product/create.html.twig');
+    }
+
+    /**
+     * @Route("/product/order/{slug}")
+     */
+    public function order($slug)
+    {
+        $product = array_values(array_filter($this->products, function ($product) use ($slug) {
+            return $product['slug'] === $slug;
+        }));
+        $product = $product[0] ?? null;
+
+        if ($product) {
+            $this->addFlash('success', 'Nous avons bien pris en compte votre commande '.$product['name'].' de '.$product['price'].' €');
+        }
+
+        return $this->redirectToRoute('app_product_list');
     }
 
     /**
