@@ -15,7 +15,10 @@ class ContactType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('email', EmailType::class)
+            ->add('email', EmailType::class, [
+                'attr'=>['placeholder'=> 'Saisir votre Email'
+                ]
+            ])
             ->add('message', TextareaType::class);
     }
 }
